@@ -1,5 +1,6 @@
 <?php
 require_once(ABSPATH . 'wp-admin/includes/taxonomy.php');
+require_once('rpi-html-parser.php');
 
 /*
 Plugin Name: Relilab Cron Import
@@ -19,7 +20,7 @@ class RelilabCronImport
     {
         add_shortcode('relilab_import_cron', array($this, 'init_import'));
         add_action('relilab_import_cron', array($this, 'init_import'));
-        add_filter('the_author', array('RelilabCronImport', 'get_the_orginal_author'));
+        add_filter('the_author', array('RelilabCronImport', 'get_the_original_author'));
     }
 
     function init_import()
@@ -71,11 +72,10 @@ class RelilabCronImport
 
     private function createNewPostTemplate(): void
     {
-        //TODO: consider possible plugin fields
         $this->newPostTemplate = array(
             'post_date' => $this->post->date,
             'post_date_gmt' => $this->post->date_gmt,
-            'post_content' => $this->parse_html($this->post->content->rendered),
+            'post_content' => (new rpiHTMLParser())->parse_html($this->post->content->rendered),
             'post_title' => $this->post->title->rendered,
             'post_excerpt' => $this->post->excerpt->rendered,
             'post_status' => $this->post->status,
@@ -86,7 +86,7 @@ class RelilabCronImport
             'post_modified_gmt' => $this->post->modified_gmt,
             'post_category' => array(),
             'tags_input' => array(),
-            'meta_input' => (array)$this->post->meta, //TODO: meta data is not saved properly
+            'meta_input' => (array)$this->post->meta,
         );
     }
 
@@ -97,9 +97,7 @@ class RelilabCronImport
                 $tagResponse = wp_remote_get($this->source_url . '/wp-json/wp/v2/tags/' . $tag);
                 if (is_array($tagResponse) && !is_wp_error($tagResponse)) {
                     $tag = json_decode($tagResponse['body']);
-                    $newTag = wp_create_term($tag->name,'post_tag'); //TODO: This returns a term behavior for create must be altered
-                    var_dump($newTag);
-                    array_push($this->newPostTemplate ['tags_input'], $newTag['name']);
+                    array_push($this->newPostTemplate ['tags_input'], $tag->name);
                 }
             }
         }
@@ -131,7 +129,7 @@ class RelilabCronImport
      */
     private function addDefaultCategory(int $default_cat): void
     {
-        if (!is_wp_error(get_the_category_by_ID($default_cat)) && !in_array($default_cat,$this->newPostTemplate['post_category']))
+        if (!is_wp_error(get_the_category_by_ID($default_cat)) && !in_array($default_cat, $this->newPostTemplate['post_category']))
             array_push($this->newPostTemplate['post_category'], $default_cat);
     }
 
@@ -166,6 +164,7 @@ class RelilabCronImport
                 $insertPostResult = wp_insert_post($this->newPostTemplate);
                 if (!is_wp_error($insertPostResult)) {
                     update_post_meta($insertPostResult, 'relilab_imported_post_id', $this->post->id);
+                    update_post_meta($insertPostResult, 'relilab_import_author', $this->getImportedPostAuthorNames());
                     get_post_meta($insertPostResult, 'relilab_imported_post_id', true);
                 } else
                     echo $insertPostResult->get_error_message();
@@ -173,71 +172,28 @@ class RelilabCronImport
         }
     }
 
-    function get_the_orginal_author($display_name)
+    private function getImportedPostAuthorNames(): string
     {
-        global $post;
-        $author = get_post_meta($post->ID,'relilab_import_author', true);
-        if ($author)
-            $display_name = $author['name'];
-        return $display_name;
-    }
-
-    public function parse_html($content){
-
-        $updated_post_content ='';
-
-        $doc = new DOMDocument();
-        $doc->loadHTML('<?xml encoding="utf-8" ?>'.$content);
-
-        function showDOMNode(DOMNode $domNode,&$updated_post_content) {
-            foreach ($domNode->childNodes as $node)
-            {
-                if(in_array($node->nodeName,array('p','ul','figure' ))){
-                    //var_dump('<pre>',$node->nodeName,htmlentities($domNode->ownerDocument->saveHTML($node)),'</pre>');
-                    $new_content = $domNode->ownerDocument->saveHTML($node);
-
-                    $blockName = '';
-                    switch($node->nodeName){
-                        case 'p':
-                            $blockName    = 'core/paragraph';
-                            break;
-                        case 'ul':
-                        case 'ol':
-                            $blockName    = 'core/list';
-                            break;
-                        case 'figure':
-                            $blockName      ='core/embed';
-                            break;
-                        default:
-                            break;
-                    }
-                    if(!empty($blockName)){
-                        $new_block = array(
-                            // We keep this the same.
-                            'blockName'    => $blockName,
-                            // also add the class as block attributes.
-                            'attrs'        => array( 'className' => 'import' ),
-                            // I'm guessing this will come into play with group/columns, not sure.
-                            'innerBlocks'  => array(),
-                            // The actual content.
-                            'innerHTML'    => $new_content,
-                            // Like innerBlocks, I guess this will is used for groups/columns.
-                            'innerContent' => array( $new_content ),
-                        );
-                        $updated_post_content .= serialize_block($new_block);
-                    }
-
-
-                }elseif ($node->hasChildNodes()) {
-                    showDOMNode($node,$updated_post_content);
+        $authorNames = '';
+        if (!empty($this->post->author)) {
+            foreach ($this->post->author as $author) {
+                $authorResponse = wp_remote_get($this->source_url . '/wp-json/wp/v2/users/' . $author);
+                if (is_array($authorResponse) && !is_wp_error($authorResponse)) {
+                    $author = json_decode($authorResponse['body']);
+                    $authorNames .= $author->name;
                 }
             }
         }
-        showDOMNode($doc,$updated_post_content);
+        return $authorNames;
+    }
 
-        // return the content.
-        return $updated_post_content;
-
+    static function get_the_original_author($display_name)
+    {
+        global $post;
+        $author = get_post_meta($post->ID, 'relilab_import_author', true);
+        if ($author)
+            $display_name = $author['name'];
+        return $display_name;
     }
 
 }
