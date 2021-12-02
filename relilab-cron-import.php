@@ -15,6 +15,7 @@ class RelilabCronImport
     private string $source_url;
     private array $newPostTemplate;
     private object $post;
+    private string $post_status;
 
     public function __construct()
     {
@@ -32,8 +33,10 @@ class RelilabCronImport
                 $category_map = $this->get_mapped_category_array(get_sub_field('relilab_import_category_mapping'));
                 $default_cat = get_sub_field('relilab_import_default_category');
                 $create_new_cats = get_sub_field('relilab_import_is_create_new_categories');
+                $this->post_status = get_sub_field('relilab_import_post_status');
 
-                $response = wp_remote_get($this->source_url . '/wp-json/wp/v2/posts?per_page=2');
+
+                $response = wp_remote_get($this->source_url . '/wp-json/wp/v2/posts?per_page='. get_field('relilab_import_post_per_page', 'option'));
                 if (is_array($response) && !is_wp_error($response)) {
                     $posts = json_decode($response['body']);
                     foreach ($posts as $this->post) {
@@ -78,7 +81,7 @@ class RelilabCronImport
             'post_content' => (new rpiHTMLParser())->parse_html($this->post->content->rendered),
             'post_title' => $this->post->title->rendered,
             'post_excerpt' => $this->post->excerpt->rendered,
-            'post_status' => $this->post->status,
+            'post_status' => $this->post_status,
             'post_type' => $this->post->type,
             'comment_status' => $this->post->comment_status,
             'ping_status' => $this->post->ping_status,

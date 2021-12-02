@@ -18,11 +18,16 @@ class rpiHTMLParser
     private function showDOMNode(DOMNode $domNode)
     {
         foreach ($domNode->childNodes as $node) {
-            if (!empty($node->nodeName) && !in_array($node->nodeName,array('html', 'xml')) ) {
+            if (!empty($node->nodeName) && !in_array($node->nodeName,array('html', 'xml', 'body')) ) {
                 $new_content = $domNode->ownerDocument->saveHTML($node);
                 switch ($node->nodeName) {
-                    case 'heading':
-                        $this->createNodeTemplate($new_content, 'core/heading');
+                    case 'h1':
+                    case 'h2':
+                    case 'h3':
+                    case 'h4':
+                    case 'h5':
+                    case 'h6':
+                        $this->createNodeTemplate($new_content, 'core/heading', $node->nodeName);
                         break;
                     case 'p':
                         $this->createNodeTemplate($new_content, 'core/paragraph');
@@ -32,7 +37,7 @@ class rpiHTMLParser
                         $this->createNodeTemplate($new_content, 'core/List');
                         break;
                     case 'figure':
-                        $this->createNodeTemplate($new_content, 'core/embed');
+                        $this->createNodeTemplate($new_content, 'core/html');
                         break;
                     default:
                         $this->createNodeTemplate($new_content, 'core/freeform');
@@ -44,7 +49,7 @@ class rpiHTMLParser
         }
     }
 
-    private function createNodeTemplate($new_content, $blockName)
+    private function createNodeTemplate($new_content, $blockName, $nodeName = '')
     {
         if (!empty($blockName)) {
             $new_block = array(
@@ -59,6 +64,10 @@ class rpiHTMLParser
                 // Like innerBlocks, I guess this will be used for groups/columns.
                 'innerContent' => array($new_content),
             );
+            if(!empty($nodeName))
+            {;
+                $new_block['attrs']['level'] = (int)trim($nodeName,'h');
+            }
             $this->updated_post_content .= serialize_block($new_block);
         }
     }
