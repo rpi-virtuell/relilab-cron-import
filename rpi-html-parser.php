@@ -21,6 +21,9 @@ class rpiHTMLParser
             if (!empty($node->nodeName) && !in_array($node->nodeName,array('html', 'xml')) ) {
                 $new_content = $domNode->ownerDocument->saveHTML($node);
                 switch ($node->nodeName) {
+                    case 'heading':
+                        $this->createNodeTemplate($new_content, 'core/heading');
+                        break;
                     case 'p':
                         $this->createNodeTemplate($new_content, 'core/paragraph');
                         break;
