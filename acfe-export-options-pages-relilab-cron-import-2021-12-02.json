@@ -1,0 +1,16 @@
+{
+    "relilab-cron-import": {
+        "page_title": "Einstellungen Relilab Cron Import",
+        "menu_slug": "relilab-cron-import",
+        "menu_title": "Relilab Cron Import",
+        "capability": "edit_posts",
+        "position": "50",
+        "parent_slug": "options-general.php",
+        "icon_url": "",
+        "redirect": true,
+        "post_id": "options",
+        "autoload": false,
+        "update_button": "Update",
+        "updated_message": "Options Updated"
+    }
+}

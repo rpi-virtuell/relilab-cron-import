@@ -1,0 +1,202 @@
+[
+    {
+        "key": "group_619cfd8335daa",
+        "title": "Import",
+        "fields": [
+            {
+                "key": "field_61a8cc9504385",
+                "label": "Anzahl der zu importierenden Beiträge pro URL",
+                "name": "relilab_import_post_per_page",
+                "type": "number",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 5,
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "min": "",
+                "max": "",
+                "step": ""
+            },
+            {
+                "key": "field_619cfda35c702",
+                "label": "Quelle",
+                "name": "quelle",
+                "type": "repeater",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "acfe_repeater_stylised_button": 1,
+                "collapsed": "",
+                "min": 0,
+                "max": 0,
+                "layout": "table",
+                "button_label": "",
+                "sub_fields": [
+                    {
+                        "key": "field_619cfdcc5c703",
+                        "label": "Wordpress Homepage",
+                        "name": "relilab_import_url",
+                        "type": "url",
+                        "instructions": "",
+                        "required": 1,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "https:\/\/wp.com"
+                    },
+                    {
+                        "key": "field_619cfdf85c704",
+                        "label": "Kategorie Mapping",
+                        "name": "relilab_import_category_mapping",
+                        "type": "textarea",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "slug-orginal : slug-ziel",
+                        "maxlength": "",
+                        "rows": 4,
+                        "new_lines": "",
+                        "acfe_textarea_code": 0
+                    },
+                    {
+                        "key": "field_619cfee75c705",
+                        "label": "Standartkategorie",
+                        "name": "relilab_import_default_category",
+                        "type": "taxonomy",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": [
+                            [
+                                {
+                                    "field": "field_619d00305c706",
+                                    "operator": "!=",
+                                    "value": "1"
+                                }
+                            ]
+                        ],
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "taxonomy": "category",
+                        "field_type": "select",
+                        "allow_null": 0,
+                        "add_term": 1,
+                        "save_terms": 0,
+                        "load_terms": 0,
+                        "return_format": "id",
+                        "acfe_bidirectional": {
+                            "acfe_bidirectional_enabled": "0"
+                        },
+                        "multiple": 0
+                    },
+                    {
+                        "key": "field_619d00305c706",
+                        "label": "Kategorien erzeugen",
+                        "name": "relilab_import_is_create_new_categories",
+                        "type": "true_false",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": [
+                            [
+                                {
+                                    "field": "field_619cfee75c705",
+                                    "operator": "==empty"
+                                }
+                            ]
+                        ],
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "message": "",
+                        "default_value": 0,
+                        "ui": 0,
+                        "ui_on_text": "",
+                        "ui_off_text": ""
+                    },
+                    {
+                        "key": "field_61a8ca18f3135",
+                        "label": "Post Status",
+                        "name": "relilab_import_post_status",
+                        "type": "acfe_post_statuses",
+                        "instructions": "",
+                        "required": 1,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "post_status": [
+                            "publish",
+                            "draft",
+                            "pending"
+                        ],
+                        "field_type": "radio",
+                        "default_value": "pending",
+                        "return_format": "name",
+                        "allow_null": 0,
+                        "other_choice": 0,
+                        "layout": "vertical",
+                        "multiple": 0,
+                        "choices": [],
+                        "ui": 0,
+                        "ajax": 0,
+                        "placeholder": "",
+                        "search_placeholder": "",
+                        "toggle": 0,
+                        "allow_custom": 0
+                    }
+                ]
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "options_page",
+                    "operator": "==",
+                    "value": "relilab-cron-import"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "left",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": "",
+        "show_in_rest": 0,
+        "acfe_display_title": "",
+        "acfe_autosync": "",
+        "acfe_form": 0,
+        "acfe_meta": "",
+        "acfe_note": ""
+    }
+]
