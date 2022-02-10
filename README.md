@@ -5,8 +5,7 @@
 
 **1. Installation**
 
-This plugin can be download or routed directly to your WP Plugin page via link
-ergänzt
+This plugin can be download or routed directly to your WP Plugin page via link - verändert
 
 ***
 
