@@ -24,7 +24,7 @@ This JSON are the fieldgroups used to save the information which is set by the o
 
 * **acfe-export-options-pages-relilab-cron-import-2021-12-02.json**
 
-Use the **Import Options Pages** function to import this JSON propertly
+Use the **Import Options Pages** function to import this JSON propertly test
 
 ***
 
