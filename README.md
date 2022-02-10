@@ -2,10 +2,6 @@
 ## Wordpress Plugin to import posts via WP REST API
 ### **_Note: This plugin requires ACF Pro in order to work_**
 
-Zeile einfügen
-
-geändert
-
 **1. Installation**
 
 This plugin can be download or routed directly to your WP Plugin page via link
