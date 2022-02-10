@@ -2,6 +2,8 @@
 require_once(ABSPATH . 'wp-admin/includes/taxonomy.php');
 require_once('rpi-html-parser.php');
 
+//test
+
 /*
 Plugin Name: Relilab Cron Import
 Plugin URI:
